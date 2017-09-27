@@ -1,31 +1,36 @@
+import os
 import numpy as np
 import tensorflow as tf
-
-# Data sets
+import pandas as pd
  
+#Read File
+ALL_DATA = pd.read_csv('D:\Python\Tensorflow_Linear\data.csv', header=0) 
+
+#define data
+csv_data1 = ALL_DATA.data1.as_matrix().reshape(len(ALL_DATA),1)
+csv_data2 = ALL_DATA.data2.as_matrix().reshape(len(ALL_DATA),1)
+csv_ans = ALL_DATA.ans.as_matrix().reshape(len(ALL_DATA),1)
+
+x_data = np.zeros((len(ALL_DATA), 2))
+x_data = np.concatenate((csv_data1, csv_data2), axis = 1)
+
+y_data = np.zeros((len(ALL_DATA), 1))
+y_data = csv_ans
+
+x_dimension = len(x_data[0])  
+y_dimension = len(y_data[0]) 
+rowCount = len(x_data)
 
 def main():
+   
+  _x = x_data;
+  _y = y_data;
   
-  
-  # Load datasets.
-  test_count = 10         # row count
-  param_count = 5         # x1, x2, x3, x4, x5
-  
-  _x = np.floor(10 * np.random.random([test_count, param_count]),dtype=np.float32)
-  _w = np.floor(10 * np.random.random([param_count, 1]),dtype=np.float32)
-  _b = np.floor(10 * np.random.random([test_count, 1]), dtype=np.float32)  
-  _y = _x.dot(_w) #+ _b
-  
-  print ("X:", _x)
-  print ("W:", _w)
-  print ("B:", _b)
-  print ("Y:", _y)
-
   # Start
-  x = tf.placeholder(tf.float32,shape=[test_count, param_count])
-  y = tf.placeholder(tf.float32,shape=[test_count, 1])
-  weights = tf.Variable(np.zeros(param_count, dtype=np.float32).reshape((param_count,1)), tf.float32)
-  biases = tf.Variable(tf.zeros([test_count, 1]), dtype=np.float32)
+  x = tf.placeholder(tf.float32,shape=[rowCount, x_dimension])
+  y = tf.placeholder(tf.float32,shape=[rowCount, 1])
+  weights = tf.Variable(np.zeros(x_dimension, dtype=np.float32).reshape((x_dimension,1)), tf.float32)
+  biases = tf.Variable(tf.zeros([rowCount, 1]), dtype=np.float32)
     
   y_pre = tf.matmul(x, weights)               
   #y_pre = tf.add(tf.matmul(x, weights), biases)          
@@ -61,9 +66,7 @@ def main():
       break
 
   curr_W, curr_loss, curr_biases = sess.run([weights, loss, biases], {x:_x, y:_y})
-  print("####################################################")
-  print ("W:", _w)
-  print ("B:", _b)
+  
   print("####################################################")
   print("weights: %s" % sess.run(weights) )
   print("fix_w: %s" % (np.round(curr_W)) )
